@@ -331,13 +331,20 @@ var eyeMaker = (function () {
 
         // intersect operation
 
+        var randomColor = Math.floor(Math.random() * 360);
+
         var newLeftpupil = leftEye.intersect(leftpupil);
         leftpupil.remove();
         newLeftpupil.fillColor = '#4adbc4';
+        newLeftpupil.fillColor.hue = 0;
+        newLeftpupil.fillColor.hue += randomColor;
+
 
         var newRightpupil = rightEye.intersect(rightpupil);
         rightpupil.remove();
         newRightpupil.fillColor = '#4adbc4';
+        newRightpupil.fillColor.hue = 0;
+        newRightpupil.fillColor.hue += randomColor;
     }
 
     function makeEyes(basicForm, nose) {
@@ -362,12 +369,68 @@ var eyeMaker = (function () {
 
 // opmaken van de mond
 var mouthMaker = (function () {
-       function makeMouth(face, nose) {
+    function makeMouth(face, nose) {
+        var mouth = new Path();
+        mouth.strokeColor = 'black';
 
-       }
+        var center = nose.bounds.bottomCenter;
+        var faceBottom = face.bounds.bottomCenter;
+        var faceLeft = face.bounds.leftCenter;
+        var faceRight = face.bounds.rightCenter;
 
-       return { makeMouth: makeMouth }
+        var m2 = new Point(center);
+        var maxDiffM2 = faceBottom.y - center.y;
+        m2.y += Math.floor((Math.random() * maxDiffM2));
+
+        var m1 = new Point(center);
+        var m3 = new Point(center);
+        var maxDiffMouthCornersY = (faceBottom.y - center.y) / 2;
+        m1.y += maxDiffMouthCornersY;
+        m3.y += maxDiffMouthCornersY;
+        if (Math.random() > 0.5) {
+            m1.y += Math.floor((Math.random() * maxDiffMouthCornersY));
+            m3.y += Math.floor((Math.random() * maxDiffMouthCornersY));
+        } else {
+            m1.y -= Math.floor((Math.random() * maxDiffMouthCornersY));
+            m3.y -= Math.floor((Math.random() * maxDiffMouthCornersY));
+        }
+        var maxDiffMouthCornersX = (faceRight.x - faceLeft.x) / 2;
+        var diffMouthCornersX = Math.floor((Math.random() * maxDiffMouthCornersX));
+        m1.x -= diffMouthCornersX;
+        do{
+            m1.x += 5;
+        }while(!face.contains(m1));
+        m3.x += diffMouthCornersX;
+        do{
+            m3.x -= 5;
+        }while(!face.contains(m3));
+
+
+
+        mouth.add(m1);
+        mouth.add(m2);
+        mouth.add(m3);
+
+        if(Math.random() > 0.7){
+            var m4 = new Point(m2);
+            m4.y = m1.y;
+            mouth.add(m4);
+            mouth.closePath();
+        }
+
+        mouth.simplify();
+    }
+
+    return {makeMouth: makeMouth}
 })();
+
+var earMaker = (function () {
+    function makeEars(){
+
+    }
+   return {makeEars: makeEars}
+});
+
 
 // maken van het gezicht
 var faceGenerator = (function () {
